@@ -1,4 +1,4 @@
-name: repo-sync
+name: ningmeng
 on:
   schedule:
     - cron: '0 */3 * * *'
