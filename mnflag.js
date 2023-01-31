@@ -1,13 +1,15 @@
 /*
 微信打开: #小程序://蒙牛营养生活家/FzGssVYt9Gii0Eq
-抓域名flagapi.letlike.com
-请求头token
+首页横幅：年在一起
+域名mengniu.app.h5work.com
+抓Cookie
+
+点会员-签到 搜tasklist
 抓域名member-api.mengniu.cn
 请求头X-Token
-点会员-签到 搜tasklist
 请求连接 unionId
 变量
-export mnflaghd='token&X-Token&unionId'
+export mnflaghd='Cookie&X-Token&unionId'
 */
 const $ = new Env('猛男flag');
 const axios = require('axios');
@@ -20,7 +22,6 @@ const {
 } = console;
 const Notify = 1; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
-
 let mnflaghd = ($.isNode() ? process.env.mnflaghd : $.getdata("mnflaghd")) || ""
 let mnflaghdArr = [];
 let data = '';
@@ -53,26 +54,35 @@ var timestamp = Math.round(new Date().getTime()).toString();
                 addNotifyStr(`\n==== 开始【第 ${num} 个账号】====\n`, true)
 
                 mnflaghd = mnflaghdArr[index];
-                token = mnflaghd.split('&')[0]
+                ck = mnflaghd.split('&')[0]
                 tokens = mnflaghd.split('&')[1]
                 unionId = mnflaghd.split('&')[2]
-                log('=====去做任务=====')
-                await tasks()
-                await bindInviter()
-                log('=====查询次数=====')
-                await playDataToday()
-                log('=====18🈲老婆不在家 可以刺激的去玩游戏了=====')
-               
-                if(can > 0){
-                for(let i = 0; i < can; i++){
-                await start()    
-                }
-                }else
-                log('\n=====今天玩的🐏痿了 玩游戏次数不足=====')  
+
+                log('\n=====抽奖=====')  
+                await share_success(96,334)
+                await lottery(96,342)
+                await share_success(1,342)
+                await lottery(1,342)
                 log('\n=====去做任务=====')                              
                 await taskList()
-                log('\n=====查询蛋白质=====')                  
-                await queryPoints()
+                log('\n=====查询=====')                  
+                await centerInfo()
+               log('\n=====许愿抽奖=====')
+               
+               await save()
+               await saveshare()
+               await lotterys()
+               await save()
+               await saveshare()
+               await lotterys()
+               await save()
+               await saveshare()
+               await lotterys()
+               await save()
+               await saveshare()
+               await lotterys()                                             
+               await getwinners()
+
             }
             await SendMsg(msg);
         }
@@ -80,400 +90,7 @@ var timestamp = Math.round(new Date().getTime()).toString();
 })()
     .catch((e) => log(e))
     .finally(() => $.done())
-async function tasks() {
-    return new Promise((resolve) => {
-        var options = {
-            method: 'GET',
-            url: 'https://flagapi.letlike.com/api/user/tasks',
-            headers: {
-                Host: 'flagapi.letlike.com',
-                Connection: 'keep-alive',
-                'sec-ch-ua': '',
-                Accept: 'application/json, text/plain, */*',
-                'sec-ch-ua-mobile': '?1',
-                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; PCT-AL10 Build/HUAWEIPCT-AL10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20221012 Mobile Safari/537.36 MMWEBID/7790 MicroMessenger/8.0.30.2260(0x28001E55) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-                token: token,
-                Origin: 'https://act.letlike.com',
-                'Sec-Fetch-Site': 'same-site',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Dest': 'empty',
-                Referer: 'https://act.letlike.com/flag/?wxUrlType=2&unionId=oQSRbs-iiKdc4qcjTiO1_nVYoT7A&openId=oFtCs5IVBO7xsMBGZ2rQS-fazBW4&userId=5842639',
-                'Accept-Language': 'zh-CN,zh;q=0.9'
-            }
-        };
-        if (debug) {
-            log(`\n【debug】=============== 这是  请求 url ===============`);
-            log(JSON.stringify(options));
-        }
-        axios.request(options).then(async function(response) {
-            try {
-                data = response.data;
-                if (debug) {
-                    log(`\n\n【debug】===============这是 返回data==============`);
-                    log(JSON.stringify(response.data));
-                }
-                if (data.resCode == 10001) {
-                list = data.data.tasks
-                    for(let i =0;i<list.length;i++){
-                        await  userCompleteTask(list[i].id)
-                    }
-                } else
-                    log(data.resMsg)
 
-
-
-            } catch (e) {
-                log(`异常：${data}，原因：${data.resMsg}`)
-            }
-        }).catch(function(error) {
-            console.error(error);
-        }).then(res => {
-            //这里处理正确返回
-            resolve();
-        });
-    })
-
-}
-async function userCompleteTask(taskId) {
-    return new Promise((resolve) => {
-        var options = {
-            method: 'POST',
-            url: 'https://flagapi.letlike.com/api/user/userCompleteTask',
-            headers: {
-                Host: 'flagapi.letlike.com',
-                Connection: 'keep-alive',
-                'sec-ch-ua': '',
-                Accept: 'application/json, text/plain, */*',
-                'sec-ch-ua-mobile': '?1',
-                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; PCT-AL10 Build/HUAWEIPCT-AL10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20221012 Mobile Safari/537.36 MMWEBID/7790 MicroMessenger/8.0.30.2260(0x28001E55) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-                token: token,
-                'Content-Type': 'multipart/form-data; boundary=---011000010111000001101001',
-                Origin: 'https://act.letlike.com',
-
-                Referer: 'https://act.letlike.com/flag/?wxUrlType=2&unionId=oQSRbs-iiKdc4qcjTiO1_nVYoT7A&openId=oFtCs5IVBO7xsMBGZ2rQS-fazBW4&userId=5842639',
-                'Accept-Language': 'zh-CN,zh;q=0.9',
-               
-            },
-            data: '-----011000010111000001101001\r\nContent-Disposition: form-data; name="taskId"\r\n\r\n'+taskId+'\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="_mt"\r\n\r\n1672051941673\r\n-----011000010111000001101001--\r\n\r\n'
-        };
-        if (debug) {
-            log(`\n【debug】=============== 这是  请求 url ===============`);
-            log(JSON.stringify(options));
-        }
-        axios.request(options).then(async function(response) {
-            try {
-                data = response.data;
-                if (debug) {
-                    log(`\n\n【debug】===============这是 返回data==============`);
-                    log(JSON.stringify(response.data));
-                }
-                if (data.resCode == 10001) {
-                 log(data.resMsg)
-                } else
-                    log(data.resMsg)
-
-
-
-            } catch (e) {
-                log(`异常：${data}，原因：${data.resMsg}`)
-            }
-        }).catch(function(error) {
-            console.error(error);
-        }).then(res => {
-            //这里处理正确返回
-            resolve();
-        });
-    })
-
-}
-async function playDataToday() {
-    return new Promise((resolve) => {
-var options = {
-  method: 'GET',
-  url: 'https://flagapi.letlike.com/api/user/playDataToday',
-  headers: {
-    Host: 'flagapi.letlike.com',
-    Connection: 'keep-alive',
-    'sec-ch-ua': '',
-    Accept: 'application/json, text/plain, */*',
-    'sec-ch-ua-mobile': '?1',
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; PCT-AL10 Build/HUAWEIPCT-AL10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20221012 Mobile Safari/537.36 MMWEBID/7790 MicroMessenger/8.0.30.2260(0x28001E55) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-    token: token,
-    Origin: 'https://act.letlike.com',
-    'Sec-Fetch-Site': 'same-site',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Dest': 'empty',
-    Referer: 'https://act.letlike.com/flag/?wxUrlType=2&unionId=oQSRbs-iiKdc4qcjTiO1_nVYoT7A&openId=oFtCs5IVBO7xsMBGZ2rQS-fazBW4&userId=5842639',
-    'Accept-Language': 'zh-CN,zh;q=0.9'
-  }
-};
-        if (debug) {
-            log(`\n【debug】=============== 这是  请求 url ===============`);
-            log(JSON.stringify(options));
-        }
-        axios.request(options).then(async function(response) {
-            try {
-                data = response.data;
-                if (debug) {
-                    log(`\n\n【debug】===============这是 返回data==============`);
-                    log(JSON.stringify(response.data));
-                }
-                if (data.resCode == 10001) {
-                 if(data && data.data){
-                  todayPlayCount = data.data.todayPlayCount
-                  todayCanPlayCount = data.data.todayCanPlayCount
-                 
-                  can = parseInt(todayCanPlayCount)-parseInt(todayPlayCount)
-                  
-                  log('今天玩了'+todayPlayCount+'次')
-                  log('今天总共可以玩'+todayCanPlayCount+'次')
-                  log('还剩'+can+'次')
-                 }
-                } else
-                    log(data.resMsg)
-
-
-
-            } catch (e) {
-                log(`异常：${data}，原因：${data.resMsg}`)
-            }
-        }).catch(function(error) {
-            console.error(error);
-        }).then(res => {
-            //这里处理正确返回
-            resolve();
-        });
-    })
-
-}
-async function queryPoints() {
-    return new Promise((resolve) => {
-var options = {
-  method: 'GET',
-  url: 'https://flagapi.letlike.com/api/user/queryPoints',
-  headers: {
-    Host: 'flagapi.letlike.com',
-    Connection: 'keep-alive',
-    'sec-ch-ua': '',
-    Accept: 'application/json, text/plain, */*',
-    'sec-ch-ua-mobile': '?1',
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; PCT-AL10 Build/HUAWEIPCT-AL10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20221012 Mobile Safari/537.36 MMWEBID/7790 MicroMessenger/8.0.30.2260(0x28001E55) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-    token: token,
-    Origin: 'https://act.letlike.com',
-    'Sec-Fetch-Site': 'same-site',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Dest': 'empty',
-    Referer: 'https://act.letlike.com/flag/?wxUrlType=2&unionId=oQSRbs-iiKdc4qcjTiO1_nVYoT7A&openId=oFtCs5IVBO7xsMBGZ2rQS-fazBW4&userId=5842639',
-    'Accept-Language': 'zh-CN,zh;q=0.9'
-  }
-};
-        if (debug) {
-            log(`\n【debug】=============== 这是  请求 url ===============`);
-            log(JSON.stringify(options));
-        }
-        axios.request(options).then(async function(response) {
-            try {
-                data = response.data;
-                if (debug) {
-                    log(`\n\n【debug】===============这是 返回data==============`);
-                    log(JSON.stringify(response.data));
-                }
-                if (data.resCode == 10001) {
-                 if(data.data && data.data.pointsBalance){
-                  pointsBalance = data.data.pointsBalance
-                  log('蛋白质: '+pointsBalance)
-                  msg += '蛋白质: '+pointsBalance
-                 }
-                } else
-                    log(data.resMsg)
-
-
-
-            } catch (e) {
-                log(`异常：${data}，原因：${data.resMsg}`)
-            }
-        }).catch(function(error) {
-            console.error(error);
-        }).then(res => {
-            //这里处理正确返回
-            resolve();
-        });
-    })
-
-}
-async function start() {
-    return new Promise((resolve) => {
-var options = {
-  method: 'POST',
-  url: 'https://flagapi.letlike.com/api/game/start',
-  headers: {
-    Host: 'flagapi.letlike.com',
-    Connection: 'keep-alive',
-    'sec-ch-ua': '',
-    Accept: 'application/json, text/plain, */*',
-    'sec-ch-ua-mobile': '?1',
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; PCT-AL10 Build/HUAWEIPCT-AL10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20221012 Mobile Safari/537.36 MMWEBID/7790 MicroMessenger/8.0.30.2260(0x28001E55) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-    token: token,
-    'Content-Type': 'multipart/form-data; boundary=---011000010111000001101001',
-    Origin: 'https://act.letlike.com',
-    'Sec-Fetch-Site': 'same-site',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Dest': 'empty',
-    Referer: 'https://act.letlike.com/flag/?wxUrlType=2&unionId=oQSRbs-iiKdc4qcjTiO1_nVYoT7A&openId=oFtCs5IVBO7xsMBGZ2rQS-fazBW4&userId=5842639',
-    'Accept-Language': 'zh-CN,zh;q=0.9',
-
-  },
-  data: '-----011000010111000001101001\r\nContent-Disposition: form-data; name="flagId"\r\n\r\n1\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="_mt"\r\n\r\n1672051941673\r\n-----011000010111000001101001--\r\n\r\n'
-};
-        if (debug) {
-            log(`\n【debug】=============== 这是  请求 url ===============`);
-            log(JSON.stringify(options));
-        }
-        axios.request(options).then(async function(response) {
-            try {
-                data = response.data;
-                if (debug) {
-                    log(`\n\n【debug】===============这是 返回data==============`);
-                    log(JSON.stringify(response.data));
-                }
-                if (data.resCode == 10001) {
-                 log(data.resMsg)
-                 if(data.data && data.data.gameRecordId){
-                 gameRecordId = data.data.gameRecordId
-                 log('游戏ID'+gameRecordId)
-                log('=====提交游戏 等待中=====')
-                 await $.wait(30000)
-                 await end()
-                 }
-                } else
-                    log(data.resMsg)
-
-
-
-            } catch (e) {
-                log(`异常：${data}，原因：${data.resMsg}`)
-            }
-        }).catch(function(error) {
-            console.error(error);
-        }).then(res => {
-            //这里处理正确返回
-            resolve();
-        });
-    })
-
-}
-async function end() {
-    return new Promise((resolve) => {
- time = Math.round(new Date().getTime()).toString();
- sign = md5('!@#$erclae#$dlll2&*5000'+time+gameRecordId)       
-var options = {
-  method: 'POST',
-  url: 'https://flagapi.letlike.com/api/game/end',
-  headers: {
-    Host: 'flagapi.letlike.com',
-    Connection: 'keep-alive',
-    'sec-ch-ua': '',
-    Accept: 'application/json, text/plain, */*',
-    'sec-ch-ua-mobile': '?1',
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; PCT-AL10 Build/HUAWEIPCT-AL10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20221012 Mobile Safari/537.36 MMWEBID/7790 MicroMessenger/8.0.30.2260(0x28001E55) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-    token: token,
-    'Content-Type': 'multipart/form-data; boundary=---011000010111000001101001',
-    Origin: 'https://act.letlike.com',
-    'Sec-Fetch-Site': 'same-site',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Dest': 'empty',
-    Referer: 'https://act.letlike.com/flag/?wxUrlType=2&unionId=oQSRbs-iiKdc4qcjTiO1_nVYoT7A&openId=oFtCs5IVBO7xsMBGZ2rQS-fazBW4&userId=5842639',
-    'Accept-Language': 'zh-CN,zh;q=0.9',
-   
-  },
-  data: '-----011000010111000001101001\r\nContent-Disposition: form-data; name="gameSign"\r\n\r\n'+sign+'y5000y'+time+'y'+gameRecordId+'\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="gamePayload"\r\n\r\n809de4c4-4945-4b81-8a02-ccf69e\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="_mt"\r\n\r\n1672051941673\r\n-----011000010111000001101001--\r\n\r\n'
-};
-        if (debug) {
-            log(`\n【debug】=============== 这是  请求 url ===============`);
-            log(JSON.stringify(options));
-        }
-        axios.request(options).then(async function(response) {
-            try {
-                data = response.data;
-               if (debug) {
-                    log(`\n\n【debug】===============这是 返回data==============`);
-                    log(JSON.stringify(response.data));
-                }
-                if (data.resCode == 10001) {
-                 if(data.data && data.data.reward){
-                 log(log(JSON.stringify(data.data.reward)))}
-
-                } else
-                    log(data.resMsg)
-
-
-
-            } catch (e) {
-                log(`异常：${data}，原因：${data.resMsg}`)
-            }
-        }).catch(function(error) {
-            console.error(error);
-        }).then(res => {
-            //这里处理正确返回
-            resolve();
-        });
-    })
-
-}
-async function bindInviter() {
-    return new Promise((resolve) => {
-var options = {
-  method: 'POST',
-  url: 'https://flagapi.letlike.com/api/user/bindInviter',
-  headers: {
-    Host: 'flagapi.letlike.com',
-    Connection: 'keep-alive',
-    'sec-ch-ua': '',
-    Accept: 'application/json, text/plain, */*',
-    'sec-ch-ua-mobile': '?1',
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; PCT-AL10 Build/HUAWEIPCT-AL10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.99 XWEB/4375 MMWEBSDK/20221012 Mobile Safari/537.36 MMWEBID/7790 MicroMessenger/8.0.30.2260(0x28001E55) WeChat/arm64 Weixin NetType/4G Language/zh_CN ABI/arm64',
-    token: token,
-    'Content-Type': 'multipart/form-data; boundary=---011000010111000001101001',
-    Origin: 'https://act.letlike.com',
-    'Sec-Fetch-Site': 'same-site',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Dest': 'empty',
-    Referer: 'https://act.letlike.com/flag/?wxUrlType=2&unionId=oQSRbs-iiKdc4qcjTiO1_nVYoT7A&openId=oFtCs5IVBO7xsMBGZ2rQS-fazBW4&userId=5842639',
-    'Accept-Language': 'zh-CN,zh;q=0.9',
-
-  },
-  data: '-----011000010111000001101001\r\nContent-Disposition: form-data; name="inviterId"\r\n\r\n92736\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="_mt"\r\n\r\n1672051941673\r\n-----011000010111000001101001--\r\n\r\n'
-};
-        if (debug) {
-            log(`\n【debug】=============== 这是  请求 url ===============`);
-            log(JSON.stringify(options));
-        }
-        axios.request(options).then(async function(response) {
-            try {
-                data = response.data;
-                if (debug) {
-                    log(`\n\n【debug】===============这是 返回data==============`);
-                    log(JSON.stringify(response.data));
-                }
-                if (data.resCode == 10001) {
-                 log(data.resMsg)
-                } else
-                    log(data.resMsg)
-
-
-
-            } catch (e) {
-                log(`异常：${data}，原因：${data.resMsg}`)
-            }
-        }).catch(function(error) {
-            console.error(error);
-        }).then(res => {
-            //这里处理正确返回
-            resolve();
-        });
-    })
-
-}
 async function taskList() {
     return new Promise((resolve) => {
 var options = {
@@ -505,15 +122,15 @@ var options = {
                     log(`\n\n【debug】===============这是 返回data==============`);
                     log(JSON.stringify(response.data));
                 }
-                if (data.code == 200) {
-                 if(data.data && data.code){
+                if (data.success == true) {
+                 
                  lists = data.data
                  await taskSubmit('01',113)   
-                 for(i = 0; i < list.length; i++){
+                 for(i = 0; i < lists.length; i++){
                   
                  await taskSubmit(lists[i].businessCode,lists[i].id)
                  }
-                 }
+                 
                 } else
                     log(data.msg)
 
@@ -565,6 +182,380 @@ var options = {
                 if (data.code == 200) {
                 
                    log(data.msg)
+                 
+                } else
+                    log(data.msg)
+
+
+
+            } catch (e) {
+                log(`异常：${data}，原因：${data.msg}`)
+            }
+        }).catch(function(error) {
+            console.error(error);
+        }).then(res => {
+            //这里处理正确返回
+            resolve();
+        });
+    })
+
+}
+async function centerInfo() {
+    return new Promise((resolve) => {
+var options = {
+  method: 'POST',
+  url: 'https://member-api.mengniu.cn/user/mnme/member/centerInfo',
+  headers: {
+    Host: 'member-api.mengniu.cn',
+    Connection: 'keep-alive',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 MicroMessenger/7.0.4.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF',
+    'X-Token': tokens,
+    'content-type': 'application/json',
+    Accept: '*/*',
+    'Sec-Fetch-Site': 'same-site',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+    Referer: 'https://member.mengniu.cn/pages/activity/protein_earn/index?wxUrlType=5&appToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJtdWwtY21sLm1lbmduaXUuY24iLCJhdWQiOiJtdWwtY21sLm1lbmduaXUuY24iLCJpYXQiOjE2NzIwNDY4MjQsIm5iZiI6MTY3MjA0NjgyNCwiZXhwIjoxNjc0NjM4ODI0LCJqdGkiOls1ODQyNjM5LCJ1c2VyIiwicHJvZHVjdGlvbiIsInd4MTM0MmM1OWE3MGM3YTk0ZiIsInJvdXRpbmUiXX0.6IBKFy7N-FzMolXCyAuO4EwSzvz6Cw9TJB5uvjvThUw',
+    'Accept-Language': 'en-us,en'
+  },
+  data: {"mer_id":1}
+};
+        if (debug) {
+            log(`\n【debug】=============== 这是  请求 url ===============`);
+            log(JSON.stringify(options));
+        }
+        axios.request(options).then(async function(response) {
+            try {
+                data = response.data;
+                if (debug) {
+                    log(`\n\n【debug】===============这是 返回data==============`);
+                    log(JSON.stringify(response.data));
+                }
+                if (data.code == 200) {
+                
+                   log('等级:'+data.data.memberInfo.memberLevelName)
+                   log('积分:'+parseInt(data.data.memberInfo.pointsBalance))
+                   log('积分:'+parseInt(data.data.memberInfo.proteinBalance))
+                } else
+                    log(data.msg)
+
+
+
+            } catch (e) {
+                log(`异常：${data}，原因：${data.msg}`)
+            }
+        }).catch(function(error) {
+            console.error(error);
+        }).then(res => {
+            //这里处理正确返回
+            resolve();
+        });
+    })
+
+}
+async function share_success(mer_id,id) {
+    return new Promise((resolve) => {
+var options = {
+  method: 'POST',
+  url: 'https://mul-cml.mengniu.cn/api/store/lottery/share_success/'+id,
+  headers: {
+    Host: 'mul-cml.mengniu.cn',
+    Connection: 'keep-alive',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 MicroMessenger/7.0.4.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF',
+    'X-Token': tokens,
+    'content-type': 'application/json',
+    Accept: '*/*',
+    'Sec-Fetch-Site': 'same-site',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+    Referer: 'https://servicewechat.com/wx1342c59a70c7a94f/211/page-frame.html',
+    'Accept-Language': 'en-us,en'
+  },
+  data: {"mer_id":mer_id}
+};
+        if (debug) {
+            log(`\n【debug】=============== 这是  请求 url ===============`);
+            log(JSON.stringify(options));
+        }
+        axios.request(options).then(async function(response) {
+            try {
+                data = response.data;
+                if (debug) {
+                    log(`\n\n【debug】===============这是 返回data==============`);
+                    log(JSON.stringify(response.data));
+                }
+                if (data.status == 200) {
+                
+                   log(data)
+                 
+                } else
+                    log(data.message)
+
+
+
+            } catch (e) {
+                log(`异常：${data}，原因：${data.message}`)
+            }
+        }).catch(function(error) {
+            console.error(error);
+        }).then(res => {
+            //这里处理正确返回
+            resolve();
+        });
+    })
+
+}
+async function lottery(mer_id,id) {
+    return new Promise((resolve) => {
+var options = {
+  method: 'POST',
+  url: 'https://mul-cml.mengniu.cn/api/store/lottery/lucky_draw/'+id,
+  headers: {
+    Host: 'mul-cml.mengniu.cn',
+    Connection: 'keep-alive',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 MicroMessenger/7.0.4.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF',
+    'X-Token': tokens,
+    'content-type': 'application/json',
+    Accept: '*/*',
+    'Sec-Fetch-Site': 'same-site',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+    Referer: 'https://servicewechat.com/wx1342c59a70c7a94f/211/page-frame.html',
+    'Accept-Language': 'en-us,en'
+  },
+  data: {"mer_id":mer_id}
+};
+        if (debug) {
+            log(`\n【debug】=============== 这是  请求 url ===============`);
+            log(JSON.stringify(options));
+        }
+        axios.request(options).then(async function(response) {
+            try {
+                data = response.data;
+                if (debug) {
+                    log(`\n\n【debug】===============这是 返回data==============`);
+                    log(JSON.stringify(response.data));
+                }
+                if (data.status == 200) {
+                
+                   log(data)
+                 
+                } else
+                    log(data.message)
+
+
+
+            } catch (e) {
+                log(`异常：${data}，原因：${data.message}`)
+            }
+        }).catch(function(error) {
+            console.error(error);
+        }).then(res => {
+            //这里处理正确返回
+            resolve();
+        });
+    })
+
+}
+async function saveshare() {
+    return new Promise((resolve) => {
+var options = {
+  method: 'POST',
+  url: 'https://mengniu.app.h5work.com/saveshare',
+  headers: {
+    Host: 'mengniu.app.h5work.com',
+    Connection: 'keep-alive',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 MicroMessenger/7.0.4.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF',
+    'Cookie': ck,
+    'Accept': 'application/json, text/plain, */*',
+    'Origin': 'https://mengniu.app.h5work.com',
+    'X-Requested-With': 'com.tencent.mm',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Site': 'same-site',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+    Referer: 'https://mengniu.app.h5work.com/home/wapIndex',
+    'Accept-Language': 'en-us,en'
+  },
+
+};
+        if (debug) {
+            log(`\n【debug】=============== 这是  请求 url ===============`);
+            log(JSON.stringify(options));
+        }
+        axios.request(options).then(async function(response) {
+            try {
+                data = response.data;
+                if (debug) {
+                    log(`\n\n【debug】===============这是 返回data==============`);
+                    log(JSON.stringify(response.data));
+                }
+                if (data.code == 0) {
+                
+                   log(data.msg)
+                 
+                } else
+                    log(data.msg)
+
+
+
+            } catch (e) {
+                log(`异常：${data}，原因：${data.msg}`)
+            }
+        }).catch(function(error) {
+            console.error(error);
+        }).then(res => {
+            //这里处理正确返回
+            resolve();
+        });
+    })
+
+}
+async function save() {
+    return new Promise((resolve) => {
+var options = {
+  method: 'POST',
+  url: 'https://mengniu.app.h5work.com/save',
+  headers: {
+    Host: 'mengniu.app.h5work.com',
+    Connection: 'keep-alive',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 MicroMessenger/7.0.4.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF',
+    'Cookie': ck,
+    'Content-Type': 'application/json;charset=UTF-8',
+    'Accept': 'application/json, text/plain, */*',
+    'Origin': 'https://mengniu.app.h5work.com',
+    'X-Requested-With': 'com.tencent.mm',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Site': 'same-site',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+    Referer: 'https://mengniu.app.h5work.com/home/wapIndex',
+    'Accept-Language': 'en-us,en'
+  },
+data:{"serverId":"ZtMO9lngq2fy2Q7yZy03vTOSc7D8r4M6Z6Zm9F4Pweaa0XnKU6fZNcke5sz3TGXk"}
+};
+        if (debug) {
+            log(`\n【debug】=============== 这是  请求 url ===============`);
+            log(JSON.stringify(options));
+        }
+        axios.request(options).then(async function(response) {
+            try {
+                data = response.data;
+                if (debug) {
+                    log(`\n\n【debug】===============这是 返回data==============`);
+                    log(JSON.stringify(response.data));
+                }
+                if (data.code == 0) {
+                
+                   log(data.msg)
+                 
+                } else
+                    log(data.msg)
+
+
+
+            } catch (e) {
+                log(`异常：${data}，原因：${data.msg}`)
+            }
+        }).catch(function(error) {
+            console.error(error);
+        }).then(res => {
+            //这里处理正确返回
+            resolve();
+        });
+    })
+
+}
+async function lotterys() {
+    return new Promise((resolve) => {
+var options = {
+  method: 'POST',
+  url: 'https://mengniu.app.h5work.com/lottery',
+  headers: {
+    Host: 'mengniu.app.h5work.com',
+    Connection: 'keep-alive',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 MicroMessenger/7.0.4.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF',
+    'Cookie': ck,
+    'Accept': 'application/json, text/plain, */*',
+    'Origin': 'https://mengniu.app.h5work.com',
+    'X-Requested-With': 'com.tencent.mm',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Site': 'same-site',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+    Referer: 'https://mengniu.app.h5work.com/home/wapIndex',
+    'Accept-Language': 'en-us,en'
+  },
+
+};
+        if (debug) {
+            log(`\n【debug】=============== 这是  请求 url ===============`);
+            log(JSON.stringify(options));
+        }
+        axios.request(options).then(async function(response) {
+            try {
+                data = response.data;
+                if (debug) {
+                    log(`\n\n【debug】===============这是 返回data==============`);
+                    log(JSON.stringify(response.data));
+                }
+                if (data.code == 0) {
+                
+                   log(data.msg)
+                 
+                } else
+                    log(data.msg)
+
+
+
+            } catch (e) {
+                log(`异常：${data}，原因：${data.msg}`)
+            }
+        }).catch(function(error) {
+            console.error(error);
+        }).then(res => {
+            //这里处理正确返回
+            resolve();
+        });
+    })
+
+}
+async function getwinners() {
+    return new Promise((resolve) => {
+var options = {
+  method: 'GET',
+  url: 'https://mengniu.app.h5work.com/getwinners',
+  headers: {
+    Host: 'mengniu.app.h5work.com',
+    Connection: 'keep-alive',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 MicroMessenger/7.0.4.501 NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF',
+    'Cookie': ck,
+    'Accept': 'application/json, text/plain, */*',
+    'Origin': 'https://mengniu.app.h5work.com',
+    'X-Requested-With': 'com.tencent.mm',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Site': 'same-site',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+    Referer: 'https://mengniu.app.h5work.com/home/wapIndex',
+    'Accept-Language': 'en-us,en'
+  },
+
+};
+        if (debug) {
+            log(`\n【debug】=============== 这是  请求 url ===============`);
+            log(JSON.stringify(options));
+        }
+        axios.request(options).then(async function(response) {
+            try {
+                data = response.data;
+                if (debug) {
+                    log(`\n\n【debug】===============这是 返回data==============`);
+                    log(JSON.stringify(response.data));
+                }
+                if (data.code == 0) {
+                
+                   log('当前卡片：'+data.data.length+'张卡片 收集5张不同卡 集齐召唤神龙换乃子')
                  
                 } else
                     log(data.msg)
