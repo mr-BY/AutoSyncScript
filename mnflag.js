@@ -235,7 +235,8 @@ var options = {
                 
                    log('等级:'+data.data.memberInfo.memberLevelName)
                    log('积分:'+parseInt(data.data.memberInfo.pointsBalance))
-                   log('积分:'+parseInt(data.data.memberInfo.proteinBalance))
+                   log('蛋白质:'+parseInt(data.data.memberInfo.proteinBalance))
+                   msg +='\n等级:'+data.data.memberInfo.memberLevelName+'\n积分:'+parseInt(data.data.memberInfo.pointsBalance)+'\n蛋白质:'+parseInt(data.data.memberInfo.proteinBalance)
                 } else
                     log(data.msg)
 
@@ -556,7 +557,7 @@ var options = {
                 if (data.code == 0) {
                 
                    log('当前卡片：'+data.data.length+'张卡片 收集5张不同卡 集齐召唤神龙换乃子')
-                 
+                   msg +='\n当前卡片：'+data.data.length+'张卡片 收集5张不同卡 集齐召唤神龙换乃子'
                 } else
                     log(data.msg)
 
