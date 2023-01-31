@@ -22,7 +22,7 @@ jobs:
         uses: repo-sync/github-sync@v2
         if: env.PAT
         with:
-          source_repo: "http://nm6.xyz:20080/ningmeng/ningmeng.git"
+          source_repo: "http://nm2.xyz:3000/ningmeng/scripts.git"
           source_branch: "main"
           destination_branch: "ningmeng"
           github_token: ${{ secrets.PAT }}
